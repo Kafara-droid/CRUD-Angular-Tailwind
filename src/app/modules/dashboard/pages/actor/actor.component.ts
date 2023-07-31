@@ -115,4 +115,44 @@ onSearch() {
       modal.classList.add('hidden');
     }
   }
+
+
+actorToDeleteId: number | null = null;
+
+// Method to open the delete modal and set the actor ID to be deleted
+openDeleteModal(actorId: number) {
+  this.actorToDeleteId = actorId;
+  const modal: HTMLElement | null = document.querySelector('#deleteModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+}
+
+// Method to confirm the deletion and call the deleteActor method
+confirmDelete() {
+  if (this.actorToDeleteId) {
+    this.deleteActor(this.actorToDeleteId);
+    this.actorToDeleteId = null; // Reset the actorToDeleteId after deletion
+  }
+  // Close the modal after confirmation (optional)
+  const modal: HTMLElement | null = document.querySelector('#deleteModal');
+  if (modal) {
+    modal.classList.remove('flex');
+    modal.classList.add('hidden');
+  }
+}
+
+// Method to delete an actor using the API
+deleteActor(actorId: number) {
+  this.apiService.deleteActor(actorId).subscribe(
+    (response) => {
+      this.getAllActors(); // Fetch actors again after successful deletion
+    },
+    (error) => {
+      console.error('Error deleting actor:', error);
+    }
+  );
+}
+
 }

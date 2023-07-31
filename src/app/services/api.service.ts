@@ -29,5 +29,8 @@ export class ApiService {
   insertActor(data: any) {
     return this.httpClient.post<any>(`${this.apiUrl}/master/actor`, {form_data : data}, this.httpOptions())
   }
+  deleteActor(actorId: number) {
+  return this.httpClient.delete<any>(`${this.apiUrl}/master/actor/${actorId}`, this.httpOptions());
+  }
   
 }

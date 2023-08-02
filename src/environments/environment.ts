@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:3000/api',
-  apiToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2OTA3NjkyNDcsImV4cCI6MTY5MDg1NTY0N30.S8_F9b4Juc0NC2KoVGfu40gpSyB2QgXAvV6kU1kBfBU'
+  apiToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2OTA4NTc4MzksImV4cCI6MTY5MDk0NDIzOX0.e-X4zLboLZtvSvBU_ir_6U6U-Rm_iL-IawKrmChaJuQ'
 };
 
 /*

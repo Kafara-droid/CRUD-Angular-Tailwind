@@ -14,6 +14,9 @@ export class ActorComponent implements OnInit {
   totalPages = 0;
   searchQuery = '';
 
+ actorToUpdateId: number = 0;
+  updateActor: { firstName: string; lastName: string } = { firstName: '', lastName: '' };
+
   constructor(private apiService: ApiService) {}
 
   ngOnInit() {
@@ -88,7 +91,6 @@ onSearch() {
       }
     );
   }
-
     onAddActorFormSubmit(event: Event) {
     event.preventDefault();
     const firstNameInput = document.getElementById('firstName') as HTMLInputElement;
@@ -108,18 +110,14 @@ onSearch() {
   }
 
     closeModal() {
-    // Close the modal using the reference
     const modal: HTMLElement | null = document.querySelector('#createProductModal');
     if (modal) {
       modal.classList.remove('flex');
       modal.classList.add('hidden');
     }
   }
-
-
 actorToDeleteId: number | null = null;
 
-// Method to open the delete modal and set the actor ID to be deleted
 openDeleteModal(actorId: number) {
   this.actorToDeleteId = actorId;
   const modal: HTMLElement | null = document.querySelector('#deleteModal');
@@ -129,30 +127,115 @@ openDeleteModal(actorId: number) {
   }
 }
 
-// Method to confirm the deletion and call the deleteActor method
 confirmDelete() {
   if (this.actorToDeleteId) {
     this.deleteActor(this.actorToDeleteId);
-    this.actorToDeleteId = null; // Reset the actorToDeleteId after deletion
+    this.actorToDeleteId = null; 
   }
-  // Close the modal after confirmation (optional)
   const modal: HTMLElement | null = document.querySelector('#deleteModal');
   if (modal) {
     modal.classList.remove('flex');
     modal.classList.add('hidden');
   }
 }
-
-// Method to delete an actor using the API
 deleteActor(actorId: number) {
   this.apiService.deleteActor(actorId).subscribe(
     (response) => {
-      this.getAllActors(); // Fetch actors again after successful deletion
+      this.getAllActors(); 
     },
     (error) => {
       console.error('Error deleting actor:', error);
     }
   );
 }
+
+  onUpdateActorFormSubmit(event: Event) {
+    event.preventDefault();
+    const firstNameInput = document.getElementById('name') as HTMLInputElement;
+    const lastNameInput = document.getElementById('brand') as HTMLInputElement;
+
+    const firstName = firstNameInput.value.trim();
+    const lastName = lastNameInput.value.trim();
+
+    if (firstName === '' || lastName === '') {
+      console.error('First name and last name are required');
+      return;
+    }
+
+    if (this.actorToUpdateId !== 0) { // Ensure actorToUpdateId is not null
+      this.updateActorData({ actor_id: this.actorToUpdateId, first_name: firstName, last_name: lastName });
+      this.actorToUpdateId = 0; // Reset to a default value after successful update or when not needed
+    }
+
+    this.closeUpdateModal();
+  }
+
+  openUpdateModal(actorId: number) {
+    this.actorToUpdateId = actorId; // Set the actorToUpdateId to the selected actor ID
+    const modal: HTMLElement | null = document.querySelector('#updateActorModal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    // Populate the updateActor object with the current values of the actor being edited
+    const actor = this.dataAktor.find((actor) => actor.id === actorId);
+    if (actor) {
+      this.updateActor.firstName = actor.first_name;
+      this.updateActor.lastName = actor.last_name;
+    }
+  }
+
+  updateActorData(actor: any) {
+    // Assuming you have a function in your ApiService to update the actor data, for example, updateActor(actorId: number, updatedActorData: any)
+    this.apiService.updateActor(this.actorToUpdateId, actor).subscribe(
+      (response) => {
+        this.getAllActors();
+        this.closeUpdateModal(); // Close the update modal after successful update
+      },
+      (error) => {
+        console.error('Error updating actor:', error);
+      }
+    );
+  }
+
+
+  closeUpdateModal() {
+    const modal: HTMLElement | null = document.querySelector('#updateProductModal');
+    if (modal) {
+      modal.classList.remove('flex');
+      modal.classList.add('hidden');
+    }
+  }
+
+    getActorById(id: number) {
+    this.apiService.getActorById(id).subscribe(
+      (data) => {
+        // Process the data for the specific actor ID
+        console.log('Actor with ID', id, 'received:', data);
+      },
+      (error) => {
+        console.error('Error fetching actor with ID', id, ':', error);
+      }
+    );
+  }
+
+  // New method to fetch data for all actors one by one
+  fetchAllActorsData() {
+    this.apiService.getAllActor().subscribe(
+      (data) => {
+        this.actors = data;
+        this.dataAktor = this.actors?.data || [];
+
+        // Loop through each actor ID and fetch data for that ID
+        this.dataAktor.forEach((actor: any) => {
+          this.getActorById(actor.id);
+        });
+      },
+      (error) => {
+        console.error('Error fetching data:', error);
+      }
+    );
+  }
 
 }
